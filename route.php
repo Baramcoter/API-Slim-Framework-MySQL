@@ -12,6 +12,17 @@ $configuration = [
 ];
 
 $config = new \Slim\Container($configuration);
+$config['errorHandler'] = function ($config) {
+    return function ($request, $response, $exception) use ($config) {
+        return $response->withStatus(500)
+            ->withHeader('Content-Type', 'application/json')
+            ->write('Server ERROR!');
+
+        return $response->withStatus(200)
+            ->withHeader('Content-Type', 'application/json')
+            ->write('Success');
+    };
+};
 
 //GET Method
 $config->get('MyEndPoint/{parameter}', function(Request $request , Response $response){
