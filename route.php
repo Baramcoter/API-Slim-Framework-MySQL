@@ -24,8 +24,10 @@ $config['errorHandler'] = function ($config) {
     };
 };
 
+$app = new \Slim\App($config);
+
 //GET Method
-$config->get('MyEndPoint/{parameter}', function(Request $request , Response $response){
+$app->get('MyEndPoint/{parameter}', function(Request $request , Response $response){
     
     $parameter = $request->getAttribute('parameter');
     $sql = "SELECT column_name FROM table_name WHERE condition = '$parameter'";
@@ -49,7 +51,7 @@ $config->get('MyEndPoint/{parameter}', function(Request $request , Response $res
 });
 
 //POST Method
-$config->post('MyEndPoint', function(Request $request , Response $response){
+$app->post('MyEndPoint', function(Request $request , Response $response){
 
     $parameter_A = $request->getParam('parameterA');
     $parameter_B = $request->getParam('parameterB');
@@ -88,7 +90,7 @@ $config->post('MyEndPoint', function(Request $request , Response $response){
 });
 
 //PUT Method
-$config->put('MyEndPoint/{parameter}', function(Request $request , Response $response){
+$app->put('MyEndPoint/{parameter}', function(Request $request , Response $response){
 
     $parameter_A = $request->getAttribute("parameter");
     $parameter_B = $request->getParam('parameterB');
@@ -127,7 +129,7 @@ $config->put('MyEndPoint/{parameter}', function(Request $request , Response $res
 });
 
 //DELETE Method
-$config->delete('MyEndPoint/{parameter}', function(Request $request , Response $response){
+$app->delete('MyEndPoint/{parameter}', function(Request $request , Response $response){
 
     $parameter = $request->getAttribute('parameter');
 
