@@ -53,4 +53,64 @@ $app->post('/api/test/token', function(Request $request , Response $response){
     $password = $request->getParam('pw');
 
     $sql = "SELECT id, pw FROM token WHERE id = '$identified'";
+
+    $data = json_decode(file_get_contents("php://input"));
+
+    try{
+        $db = new dbconn();
+        $db = $db->connect();
+
+        $statement = $db->query($sql);
+        $num = $statement->rowCount();
+
+        if($num > 0){
+            $row = $statement->fetch();
+
+            $contrast_identified = $row['id'];
+            $contrast_password = $row['pw'];
+
+            $db = null;
+
+            if(password_verify($password, $contrast_password)){
+                $secret_key = "Your secret key"; //any string
+                $issuer_claim = "Your server name"; // this can be the servername
+                $audience_claim = "THE_AUDIENCE";
+                $issuedat_claim = time();
+                $notbefore_claim = $issuedat_claim + 0; //<-Seconds, Waiting time for token acceptance after token creation
+                $expire_claim = $issuedat_claim + 3600; //<-Seconds, Validify of the generated token
+
+                $token = array(
+                    "iss" => $issuer_claim,
+                    "aud" => $audience_claim,
+                    "iat" => $issuedat_claim,
+                    "nbf" => $notbefore_claim,
+                    "exp" => $expire_claim,
+                    "data" => array(
+                        "id" => $contrast_identified;
+                    ));
+
+                    http_response_code(200);
+
+                    $jwt = JWT::encode($token, $secret_key);
+
+                    echo json_encode(
+                        array(
+                            "message" => "Succcess",
+                            "jwt" => $jwt,
+                            "id" => $contrast_identified,
+                            "expireAt" => $expire_claim),
+                            JSON_PRETTY_PRINT);
+            }
+            else{
+                echo json_encode(
+                    array(
+                        "message" => "failed",
+                        "password" => $password), 
+                        JSON_PRETTY_PRINT);
+            }
+        }
+    }
+    catch(PDOException $ex){
+        return $ex->getMessage();
+    }
 });
